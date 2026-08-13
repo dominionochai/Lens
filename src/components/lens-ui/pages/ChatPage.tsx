@@ -38,23 +38,7 @@ export default function ChatPage({
     confirmedHints,
     trackHesitationKeystroke,
     consumeHesitationHints,
-    cameraActive,
   } = useMode();
-
-  const lastStuckWordRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (liveFlaggedWord && liveFlaggedWord !== lastStuckWordRef.current) {
-      lastStuckWordRef.current = liveFlaggedWord;
-      setMessages((m) => [
-        ...m,
-        { from: "lens", text: "Looks like you are stuck - want a hint?" },
-      ]);
-    }
-    if (!liveFlaggedWord) {
-      lastStuckWordRef.current = null;
-    }
-  }, [liveFlaggedWord]);
 
   const effectiveNoise = demoNoise ?? noiseLevel;
   const effectiveMode: "calm" | "focused" | "overwhelmed" =
@@ -176,13 +160,6 @@ export default function ChatPage({
             <span className={`w-2 h-2 rounded-full ${dotColor} ${effectiveMode === "overwhelmed" ? "pulse-fast" : "pulse-dot"}`} />
             <span className="text-[11px] text-[#5A6B52] font-medium">{pillLabel}</span>
           </div>
-          <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-white/70 border border-white/80">
-            <span className="absolute inset-0 rounded-full border-2 border-[#7B9E6B] pulse-dot" />
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A6B52" strokeWidth="2">
-              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-          </div>
           <select
             value={demoNoise === null ? "live" : String(demoNoise)}
             onChange={(e) => {
@@ -290,29 +267,8 @@ export default function ChatPage({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.ctrlKey && e.key === "x") {
-              e.preventDefault();
-              setMessages((m) => [...m, { from: "lens", text: "Seems like you are looking away - still there?" }]);
-              return;
-            }
             trackHesitationKeystroke(e.key, input);
-            if (e.key === "Backspace") {
-              window.__bsCount = (window.__bsCount || 0) + 1;
-              if (window.__bsCount >= 7) {
-                window.__bsCount = 0;
-                setMessages((m) => [...m, { from: "lens", text: "Looks like you are stuck - want a hint?" }]);
-              }
-            } else if (e.key !== "Enter") {
-              window.__bsCount = 0;
-            }
-            if (window.__pauseTimer) clearTimeout(window.__pauseTimer);
-            window.__pauseTimer = setTimeout(() => {
-              setMessages((m) => [...m, { from: "lens", text: "Looks like you are stuck - want a hint?" }]);
-            }, 2500);
-            if (e.key === "Enter") {
-              if (window.__pauseTimer) clearTimeout(window.__pauseTimer);
-              send();
-            }
+            if (e.key === "Enter") send();
           }}
           placeholder={effectiveMode === "overwhelmed" ? "just say the one thing..." : "say something..."}
           disabled={loading || uploading}
@@ -326,30 +282,6 @@ export default function ChatPage({
           send
         </button>
       </div>
-      <button
-        onClick={() =>
-          setMessages((m) => [...m, { from: "lens", text: "Seems like you are looking away - still there?" }])
-        }
-        style={{ position: "fixed", bottom: "16px", right: "16px", zIndex: 9999 }}
-        className="rounded-full bg-[#3F4A3A] text-[#FBE9DE] px-4 py-2 text-[12px] font-medium shadow-lg"
-      >
-        looking away
-      </button>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

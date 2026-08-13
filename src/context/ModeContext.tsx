@@ -39,7 +39,6 @@ interface ModeContextValue {
   setAttentionAnalysisContext: (nodes: ConceptNode[]) => void;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  cameraActive: boolean;
 }
 
 const ModeContext = createContext<ModeContextValue>({
@@ -61,7 +60,6 @@ const ModeContext = createContext<ModeContextValue>({
   setAttentionAnalysisContext: () => {},
   videoRef: { current: null },
   canvasRef: { current: null },
-  cameraActive: false,
 });
 
 const visionPhrases: Record<Mode, string[]> = {
@@ -92,7 +90,6 @@ export function ModeProvider({ children }: { children: ReactNode }) {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [cameraActive, setCameraActive] = useState(false);
   const faceLandmarkerRef = useRef<import("@mediapipe/tasks-vision").FaceLandmarker | null>(null);
 
   const [onContent, setOnContent] = useState(true);
@@ -186,7 +183,6 @@ export function ModeProvider({ children }: { children: ReactNode }) {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play();
-          setCameraActive(true);
         }
 
         try {
@@ -263,7 +259,6 @@ export function ModeProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       if (intervalId) clearInterval(intervalId);
       if (stream) stream.getTracks().forEach((t) => t.stop());
-      setCameraActive(false);
       resetAttentionState();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -325,7 +320,6 @@ export function ModeProvider({ children }: { children: ReactNode }) {
         setAttentionAnalysisContext,
         videoRef,
         canvasRef,
-        cameraActive,
       }}
     >
       <video ref={videoRef} muted playsInline style={{ display: "none" }} />
@@ -338,4 +332,3 @@ export function ModeProvider({ children }: { children: ReactNode }) {
 export function useMode() {
   return useContext(ModeContext);
 }
-

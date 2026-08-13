@@ -402,3 +402,17 @@ body {
     box-shadow: 0 0 0 8px rgba(232, 166, 152, 0);
   }
 }
+
+.lens-attention-pulse {
+  animation: lens-attention-glow 1.6s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(232, 166, 152, 0.5);
+}
+
+@keyframes lens-attention-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(232, 166, 152, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(232, 166, 152, 0);
+  }
+}

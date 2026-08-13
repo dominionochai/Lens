@@ -31,6 +31,10 @@ const { attentionPulseNode, setAttentionAnalysisContext } = useMode();
     setAttentionAnalysisContext(nodes);
   }, [nodes, setAttentionAnalysisContext]);
 
+  useEffect(() => {
+    setAttentionAnalysisContext(nodes);
+  }, [nodes, setAttentionAnalysisContext]);
+
   const edges: ConceptEdge[] = useMemo(() => {
     return (analysis?.dependencies?.edges ?? []).map((e: any) => ({
       from: e.from,
@@ -177,6 +181,7 @@ const { attentionPulseNode, setAttentionAnalysisContext } = useMode();
     </div>
   );
 }
+
 
 
 
