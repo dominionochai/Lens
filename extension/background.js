@@ -1,0 +1,1 @@
+﻿console.log("Cognitive Lens background service worker started");
